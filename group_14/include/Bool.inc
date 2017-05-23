@@ -1,0 +1,7 @@
+.NOLIST
+
+
+FALSE = 0
+TRUE = 1
+
+BOOL TEXTEQU <BYTE>
