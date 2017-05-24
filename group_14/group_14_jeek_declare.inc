@@ -63,6 +63,8 @@ StartHexagonListenerThread PROTO
 StartBombThread PROTO
 ;開始時間執行緒
 StartTimeThread PROTO
+;開始恐龍執行緒
+StartDinosaurProcessThread PROTO
 ;控制鍵
 MoveCharactor PROTO
 ;判斷是否為終點, Return register:eax
@@ -137,7 +139,7 @@ WinGame PROTO
 LoseGame PROTO
 ;安全輸出
 SafePrintObject PROTO, idType:DWORD, _data:WORD, _coord:COORD
-;恐龍形成
+;恐龍行程
 DinosaurProc PROTO
 
 ;以下為印出元素的方法

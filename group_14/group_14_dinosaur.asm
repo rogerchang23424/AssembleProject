@@ -21,7 +21,14 @@ sum_of_dinosaur DWORD ?
 .code
 DinosaurProc PROC
 while1:
+	mov al, is_des
+	test al, al
+	jnz end_proc
+	invoke Sleep, 100
 	jmp while1
+
+end_proc:
+	xor eax, eax
 	ret
 DinosaurProc ENDP
 

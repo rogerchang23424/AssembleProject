@@ -44,6 +44,8 @@ PUBLIC map_main_color
 PUBLIC level
 PUBLIC main_char_location
 PUBLIC is_des
+PUBLIC piranha_sta
+PUBLIC piranha_in
 
 .data
 map WORD 12 DUP(17 DUP(?))
@@ -330,6 +332,7 @@ InitiateStatusBar PROC
 	call StartBombThread		;開始炸彈計時分流
 	call StartTimeThread	;開始計時器分流
 	call StartHexagonListenerThread
+	call StartDinosaurProcessThread
 
 	ret
 InitiateStatusBar ENDP
@@ -534,6 +537,30 @@ StartTimeThread PROC
 	pop esi
 	ret
 StartTimeThread ENDP
+
+StartDinosaurProcessThread PROC
+	LOCAL pid:DWORD
+	push esi
+
+	lea esi, pid
+	push esi
+	push 0
+	push 0
+	push DinosaurProc
+	push 0
+	push 0
+	call CreateThread@24	;啟動恐龍控制的執行緒
+
+	mov esi, OFFSET threads
+	mov edx, num_of_thread
+	shl edx, 2
+	add esi, edx
+	mov HANDLE PTR [esi], eax
+	add num_of_thread, 1		;將該執行緒存到執行緒陣列裡
+
+	pop esi
+	ret
+StartDinosaurProcessThread ENDP
 
 IsDestination PROC
 	mov al, force_destination		;檢查是否強制終點
