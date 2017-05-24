@@ -19,7 +19,7 @@ PRINT_LEVEL = 3
 PRINT_KEYS = 4
 PRINT_ACTIVE_COUNT = 5
 PRINT_TIME = 6
-
+PRINT_DINOSAUR = 7
 
 ;定義食人花狀態架構
 PIRANHA_STATUS STRUCT
@@ -139,8 +139,15 @@ WinGame PROTO
 LoseGame PROTO
 ;安全輸出
 SafePrintObject PROTO, idType:DWORD, _data:WORD, _coord:COORD
+
 ;恐龍行程
 DinosaurProc PROTO
+;添加恐龍
+AddDinosaur PROTO, _coord:COORD
+;印出恐龍
+PrintDinosaur PROTO, _loc:COORD
+;恐龍移動
+DinosaurMove PROTO
 
 ;以下為印出元素的方法
 print_wall PROTO

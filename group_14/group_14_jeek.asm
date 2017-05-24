@@ -46,6 +46,8 @@ PUBLIC main_char_location
 PUBLIC is_des
 PUBLIC piranha_sta
 PUBLIC piranha_in
+PUBLIC dinosaur
+PUBLIC cs_print
 
 .data
 map WORD 12 DUP(17 DUP(?))
@@ -101,7 +103,7 @@ print_method DWORD 0, print_wall, print_ice_dirt_wall, print_dirt_wall, print_fl
 			 DWORD print_cross_pad, print_hidden_pill, print_laser_eye, print_dinosaur, print_active_bomb
 
 safe_print_method DWORD 0, PrintMainChar, PrintScore, PrintLevel, PrintKeys, PrintActiveBombCount, PrintTime
-
+			      DWORD PrintDinosaur
 ;表示有哪些十人花在吃
 piranha_sta PIRANHA_STATUS 10 DUP(<>)
 piranha_in BYTE 0
@@ -349,7 +351,11 @@ y_forloop1:
 	mov _coord.X, 0
 	jmp check_x_forloop1	;先檢查x是否小於地圖大小的x
 x_forloop1:
-
+	cmp word ptr [esi], 24
+	jne skip
+	invoke AddDinosaur, _coord
+	mov word ptr [esi], 5
+skip:
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord	;將該元素的位置印出來
 	add esi, 2
 	add _coord.X, 1
@@ -415,6 +421,7 @@ cleanMap PROC	;此函式顧名思義就是把所有的資料恢復原始，除�
 	mov counter, 0
 	mov active_bomb_count, 0
 	mov is_removing_hexagon, FALSE
+	mov sum_of_dinosaur, 0
 
 	pop ecx
 	pop edi
