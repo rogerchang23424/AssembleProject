@@ -34,11 +34,16 @@ INCLUDE group_14_jeek_declare.inc
 
 ; main          EQU start@0
 EXTERN hout:DWORD
+EXTERN dinosaur_location:COORD
+EXTERN dinosaur_move_dir:DIRECTION
+EXTERN sum_of_dinosaur:DWORD
+
 PUBLIC map
 PUBLIC map_size
 PUBLIC map_main_color
 PUBLIC level
 PUBLIC main_char_location
+PUBLIC is_des
 
 .data
 map WORD 12 DUP(17 DUP(?))

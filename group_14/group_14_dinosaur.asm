@@ -8,6 +8,11 @@ EXTERN map_size:COORD
 EXTERN map_main_color:DWORD
 EXTERN level:WORD
 EXTERN main_char_location:COORD
+EXTERN is_des:BOOL
+
+PUBLIC dinosaur_location
+PUBLIC dinosaur_move_dir
+PUBLIC sum_of_dinosaur
 
 .data
 dinosaur_location COORD <>
