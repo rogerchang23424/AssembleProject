@@ -88,13 +88,9 @@ move_down:
 next:
 	cmp word ptr [esi], 3		;是否為牆壁
 	jle cannot_move
-	cmp word ptr [esi], 12		;是否為核廢料罐
-	je cannot_move
-	cmp word ptr [esi], 13		;是否為門
-	je cannot_move
-	cmp word ptr [esi], 15		;是否為炸彈、六腳註、寶箱、球
+	cmp word ptr [esi], 12		;是否為核廢料罐、門、鑰匙	
 	jl can_move
-	cmp word ptr [esi], 18
+	cmp word ptr [esi], 18		;是否為炸彈、六腳註、寶箱、球
 	jle cannot_move
 	cmp word ptr [esi], 23		;是否為雷射眼
 	je cannot_move
@@ -152,38 +148,38 @@ can_move:
 	je move_down
 
 move_left:
-	
+	mov word ptr [esi], 5
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	sub _coord.X, 1
 	sub esi, 2
-	mov word ptr [esi], 5
+	mov word ptr [esi], 3
 	invoke PrintDinosaur, _coord
 	jmp end_move
 
 move_right:
-	
+	mov word ptr [esi], 5
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	add _coord.X, 1
 	add esi, 2
-	mov word ptr [esi], 5
+	mov word ptr [esi], 3
 	invoke PrintDinosaur, _coord
 	jmp end_move
 
 move_up:
-	
+	mov word ptr [esi], 5
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	sub _coord.Y, 1
 	sub esi, 34
-	mov word ptr [esi], 5
+	mov word ptr [esi], 3
 	invoke PrintDinosaur, _coord
 	jmp end_move
 
 move_down:
-	
+	mov word ptr [esi], 5
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	add _coord.Y, 1
 	add esi, 34
-	mov word ptr [esi], 5
+	mov word ptr [esi], 3
 	invoke PrintDinosaur, _coord
 	jmp end_move
 

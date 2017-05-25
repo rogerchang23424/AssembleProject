@@ -454,7 +454,7 @@ PrintMainChar PROC
 	test al, al
 	jz print_show
 
-	mov eax, 8
+	mov eax, 1
 	call SetTextColor
 	invoke WriteWideString, hout, OFFSET act   ;把角色印出來
 	jmp end_print_main_proc
