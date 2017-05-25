@@ -354,9 +354,12 @@ x_forloop1:
 	cmp word ptr [esi], 24
 	jne skip
 	invoke AddDinosaur, _coord
+	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord	;將該元素的位置印出來
 	mov word ptr [esi], 5
+	jmp next
 skip:
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord	;將該元素的位置印出來
+next:
 	add esi, 2
 	add _coord.X, 1
 check_x_forloop1:

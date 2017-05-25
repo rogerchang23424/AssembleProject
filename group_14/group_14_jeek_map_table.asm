@@ -327,21 +327,48 @@ map25 WORD  5, 5, 5, 5,14, 9, 4,16, 5, 5, 5, 5, 4, 5, 1, 1, 1
 	  WORD  5, 4, 6,16, 5, 1,16, 5, 5, 1, 6, 6, 1, 5,18,16, 5
 	  WORD  5, 4,16, 6, 5, 1,14, 5, 5, 1, 5, 5, 1,16, 5,17,16
 	  WORD  5, 4, 4, 4, 5, 1, 1, 1, 1, 1, 8, 5, 1,18, 5,16, 7
+
+map26 WORD 13,13,13,13,13,13,13,13,13,13,13,13,13,13, 1, 1, 1
+	  WORD 13,24, 5, 5, 5,13, 5,13, 5, 5, 5, 5, 5,13, 1, 1, 1
+	  WORD 13, 5,17,17,17,13, 5, 4, 5,13, 5,13, 5,13, 1, 1, 1
+	  WORD 13, 5, 5, 5, 5,13, 5, 5, 5,13, 5, 5, 5,13,13,13,13
+	  WORD 13,13,13,13,13,13,13, 4,13,13, 5,13,13,13,13,13,13
+	  WORD 13, 5, 5,13, 5, 5, 5, 5,13,13, 5, 4, 4, 4, 4,13,13
+	  WORD 13, 5, 5,13, 5,13, 5, 8, 5, 5, 5, 4, 4, 4, 4, 5,13
+	  WORD 13, 5,13,13, 5,13,13,21,13,13,13,20,20,20, 4, 5,13
+	  WORD 13, 5, 5, 5, 5, 5, 5, 5, 5, 5,13,20, 7,20, 4, 4,13
+	  WORD 13, 5,13,13,13,13, 4, 5, 4, 5,13,20,20,20, 4,14,13
+	  WORD 13, 5, 5, 5, 5, 5, 5, 5,13, 5, 5, 4, 4, 4, 4, 4,13
+	  WORD 13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13
+
+map27 WORD 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+	  WORD 1, 4,17, 1, 5, 8,20, 5,20, 8, 4, 5, 4, 1, 1, 1, 1
+	  WORD 1,17, 5, 4,24, 5, 5, 8,20, 5, 1, 4, 5, 1, 1, 1, 1
+	  WORD 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,13, 1, 1, 1, 1, 1
+	  WORD 1, 4, 5, 5, 8, 5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5, 1
+	  WORD 1, 5, 4,16, 1, 5, 5, 5, 6, 1, 1, 1, 1, 8, 5,14, 1
+	  WORD 1, 5, 5, 5, 1, 4, 5, 4, 5, 5, 5, 4, 5, 5, 5, 4, 1
+	  WORD 1, 4, 5, 4, 1, 5, 4, 5, 5, 9, 5, 5, 1, 1, 1, 1, 1
+	  WORD 1, 5, 8, 5, 8, 4, 5, 5, 4, 1, 5, 5,13, 5, 5, 5, 1
+	  WORD 1, 1,16, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 5,14, 5, 1
+	  WORD 1, 5, 5, 4, 5, 7, 1, 4, 4, 4, 8, 4, 1,24, 5, 5, 1
+	  WORD 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 ;地圖資料區，終點
 map_ptr DWORD OFFSET map1, OFFSET map2, OFFSET map3, OFFSET map4, OFFSET map5
 		DWORD OFFSET map6, OFFSET map7, OFFSET map8, OFFSET map9, OFFSET map10
 		DWORD OFFSET map11, OFFSET map12, OFFSET map13, OFFSET map14, OFFSET map15
 		DWORD OFFSET map16, OFFSET map17, OFFSET map18, OFFSET map19, OFFSET map20
 		DWORD OFFSET map21, OFFSET map22, OFFSET map23, OFFSET map24, OFFSET map25
+		DWORD OFFSET map26, OFFSET map27
 map_main_loc COORD <2,2>, <1,1>, <1,1>, <4,4>, <5,2>, <12,8>, <2,1>, <5,1>, <4,1>, <8,6>
 			 COORD <8,5>, <2,1>, <4, 1>, <4,2>, <1, 10>, <2, 2>, <8, 5>, <1,1>, <1,1>, <6,3>
-			 COORD <4,0>, <9,8>, <4,7>, <1,1>, <3,1>
+			 COORD <4,0>, <9,8>, <4,7>, <1,1>, <3,1>, <15,6>, <6,5>
 map_size_2 COORD <17,9>, <17,9>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>
 		   COORD <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17, 12>, <17,12>, <17,12>, <17,12>
-		   COORD <17,12>, <17,12>, <17,12>, <17,12>, <17,12>
+		   COORD <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>
 map_main_color_table DWORD lightBlue, yellow, lightBlue, lightBlue, gray, lightRed, lightMagenta, lightBlue, magenta, lightRed
 					 DWORD lightBlue, yellow, red, red, lightBlue, lightBlue, lightBlue, gray, lightBlue, 6
-					 DWORD lightBlue, gray, lightBlue, yellow, lightBlue
+					 DWORD lightBlue, gray, lightBlue, yellow, lightBlue, gray, yellow
 
 .code
 LoadMap PROC

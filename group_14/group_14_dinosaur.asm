@@ -3,7 +3,7 @@ INCLUDE Irvine32.inc
 INCLUDE Bool.inc
 INCLUDE group_14_jeek_declare.inc
 
-EXTERN map:DWORD
+EXTERN map:WORD
 EXTERN map_size:COORD
 EXTERN map_main_color:DWORD
 EXTERN level:WORD
@@ -86,20 +86,20 @@ move_down:
 	jmp next
 
 next:
-	cmp word ptr [esi], 3
+	cmp word ptr [esi], 3		;是否為牆壁
 	jle cannot_move
-	cmp word ptr [esi], 12
+	cmp word ptr [esi], 12		;是否為核廢料罐
 	je cannot_move
-	cmp word ptr [esi], 13
+	cmp word ptr [esi], 13		;是否為門
 	je cannot_move
-	cmp word ptr [esi], 15
-	je cannot_move
-	cmp word ptr [esi], 16
-	je cannot_move
+	cmp word ptr [esi], 15		;是否為炸彈、六腳註、寶箱、球
+	jl can_move
 	cmp word ptr [esi], 18
+	jle cannot_move
+	cmp word ptr [esi], 23		;是否為雷射眼
 	je cannot_move
-	cmp word ptr [esi], 23
-	je cannot_move
+
+can_move:
 	mov eax, 1
 	jmp end_proc
 
@@ -134,10 +134,10 @@ can_move:
 	push edx
 
 	movzx eax, _coord.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx, _coord.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax		;將esi指向該地圖的點
