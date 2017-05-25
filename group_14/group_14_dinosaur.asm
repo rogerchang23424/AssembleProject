@@ -152,30 +152,38 @@ can_move:
 	je move_down
 
 move_left:
-	mov word ptr [esi], 5
+	
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	sub _coord.X, 1
+	sub esi, 2
+	mov word ptr [esi], 5
 	invoke PrintDinosaur, _coord
 	jmp end_move
 
 move_right:
-	mov word ptr [esi], 5
+	
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	add _coord.X, 1
+	add esi, 2
+	mov word ptr [esi], 5
 	invoke PrintDinosaur, _coord
 	jmp end_move
 
 move_up:
-	mov word ptr [esi], 5
+	
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	sub _coord.Y, 1
+	sub esi, 34
+	mov word ptr [esi], 5
 	invoke PrintDinosaur, _coord
 	jmp end_move
 
 move_down:
-	mov word ptr [esi], 5
+	
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	add _coord.Y, 1
+	add esi, 34
+	mov word ptr [esi], 5
 	invoke PrintDinosaur, _coord
 	jmp end_move
 
