@@ -353,6 +353,8 @@ map27 WORD 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 	  WORD 1, 1,16, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 5,14, 5, 1
 	  WORD 1, 5, 5, 4, 5, 7, 1, 4, 4, 4, 8, 4, 1,24, 5, 5, 1
 	  WORD 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+
+
 ;地圖資料區，終點
 map_ptr DWORD OFFSET map1, OFFSET map2, OFFSET map3, OFFSET map4, OFFSET map5
 		DWORD OFFSET map6, OFFSET map7, OFFSET map8, OFFSET map9, OFFSET map10

@@ -34,6 +34,7 @@ INCLUDE group_14_jeek_declare.inc
 
 ; main          EQU start@0
 EXTERN hout:DWORD
+EXTERN hin:DWORD
 EXTERN dinosaur_location:COORD
 EXTERN dinosaur_move_dir:DIRECTION
 EXTERN sum_of_dinosaur:DWORD
@@ -578,10 +579,10 @@ IsDestination PROC
 	jnz func_key
 
     movzx eax, main_char_location.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx, main_char_location.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map		
 	add esi, eax		;把esi指向該地圖的那個點
@@ -609,6 +610,10 @@ MoveCharactor PROC
 	je extend_method
 	cmp al, 27		;esc
 	je esc_method
+	cmp al, 6ch
+	je l_method
+	cmp al, 4ch
+	je l_method
 	jmp end_switch
 extend_method:
 	cmp ah, 4bh		 ;left-allow
@@ -735,6 +740,8 @@ f2_method:
 esc_method:
 	mov is_exit_key, TRUE
 	jmp is_dead
+l_method:
+	jmp is_dead
 
 end_switch:
 	jmp cannot_move
@@ -742,10 +749,10 @@ can_move:
 	;角色有沒有經過食人花
 	invoke SetPiranhaOpen, main_char_location
 	movzx eax, main_char_location.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx, main_char_location.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax
@@ -785,10 +792,10 @@ IsBlock PROC, _coord:COORD, forcewall:BOOL
 	push edx	;將會用到的暫存器存入堆疊裡，除了回傳值
 
 	movzx eax, _coord.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx, _coord.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax	;將esi指向該地圖的點
@@ -844,10 +851,10 @@ IsFlowerAndBoxEat PROC
 	push esi	;將會用到的暫存器壓入堆疊
 
 	movzx eax, main_char_location.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx, main_char_location.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax			;將esi指向該地圖的點
@@ -888,10 +895,10 @@ EatFakeItem PROC, _coord:COORD
 	push esi		;將會用到的暫存器壓入堆疊
 
 	movzx eax,  _coord.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx,  _coord.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax			;將esi指向該地圖的點
@@ -920,10 +927,10 @@ EatKeyAndOpenDoor PROC, _coord:COORD
 	push edx		;將暫存器放入堆疊，除了回傳值
 
 	movzx eax, _coord.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx, _coord.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax		;將esi指向該地圖的點
@@ -980,10 +987,10 @@ IsPiranhaNear PROC, _coord:COORD
 	mov ax, _coord.Y
 	mov temp.Y, ax
 	movzx eax, temp.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx, temp.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax		;將esi指向該地圖的點
@@ -1049,10 +1056,10 @@ ItemCanMove PROC, _coord:COORD, _dir:DIRECTION
 	push edx		;將暫存器放入堆疊
 
 	movzx eax,  _coord.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx,  _coord.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax	;將esi指向該地圖的點
@@ -1470,10 +1477,10 @@ SoftRemoveHexagon PROC
 	mov _coord, eax
 
 	movzx eax,  _coord.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx,  _coord.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax			;esi指向該位置
@@ -1624,12 +1631,9 @@ ModifyBomb PROC, _loc:DWORD, _coord:COORD
 
 	invoke EnterCriticalSection, ADDR cs_bomb		;進入cs_bomb關鍵區域
 
-	mov esi, OFFSET active_bomb_location
-	mov eax, _loc
-	shl eax, 3
-	add esi, eax
+	mov esi, _loc
 	mov eax, _coord
-	mov (BOMB_STATUS PTR [esi])._pos, eax			;更新該陣列區塊的炸彈位址
+	mov (BOMB_STATUS PTR [(OFFSET active_bomb_location)+esi*(TYPE active_bomb_location)])._pos, eax			;更新該陣列區塊的炸彈位址
 
 	invoke LeaveCriticalSection, ADDR cs_bomb		;離開cs_bomb關鍵區域
 
@@ -1645,7 +1649,7 @@ AddBomb PROC, _coord:COORD
 	invoke EnterCriticalSection, ADDR cs_bomb		;進入cs_bomb關鍵區域
 
 	mov eax, active_bomb_count
-	shl eax, 3
+	lea eax, [eax*(TYPE active_bomb_location)]
 	mov esi, OFFSET active_bomb_location
 	add esi, eax
 	mov eax, _coord
@@ -1701,10 +1705,10 @@ SetPiranhaOpen PROC, _coord:COORD
 	push eax
 
 	movzx eax, _coord.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx, _coord.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax		;將esi指向該位置
@@ -1961,6 +1965,21 @@ check_y_forloop1:
 	ret
 YellowAndBlueExchange ENDP
 
+SendDeadMessage PROC
+	LOCAL ir:INPUT_RECORD, dwtmp:DWORD
+	mov ir.EventType, KEY_EVENT
+	mov ir.Event.bKeyDown, TRUE
+	mov ir.Event.dwControlKeyState, 0
+	mov ir.Event.uChar.AsciiChar, 'l'
+	mov ir.Event.wRepeatCount, 1
+	mov ir.Event.wVirtualKeyCode, 'L'
+	invoke MapVirtualKeyA, 'L', 0
+	mov ir.Event.wVirtualScanCode, ax
+
+	invoke WriteConsoleInputA, hin, ADDR ir, 1, ADDR dwtmp
+	ret
+SendDeadMessage ENDP
+
 AddCheckPiranhaStatus PROC, _coord:COORD
 	push esi
 	push eax
@@ -2046,10 +2065,10 @@ change_to_small:
 	invoke SafePrintObject, MAP_ELEMENT, 9, (PIRANHA_STATUS PTR [esi])._local	;改成小等狀態的十人花
 
 	movzx eax, (PIRANHA_STATUS PTR [esi])._local.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx, (PIRANHA_STATUS PTR [esi])._local.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax				;esi為該地圖的點
@@ -2176,10 +2195,10 @@ Explosion PROC, _coorda:COORD
 	mov eax, _coorda
 	mov _coord, eax
 	movzx eax, _coord.Y
-	mov ebx, 34
+	mov ebx, 17*(TYPE map)
 	imul ebx
 	movzx edx, _coord.X
-	shl edx, 1
+	lea edx, [edx*(TYPE map)]
 	add eax, edx
 	mov esi, OFFSET map
 	add esi, eax			;將esi設定為啟動該炸彈點
@@ -2217,6 +2236,10 @@ Explosion PROC, _coorda:COORD
 skip_pi1:
 	mov word ptr [esi], 5
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord		;消除該位置的物品
+	mov eax, _coord
+	cmp main_char_location, eax
+	jne skip1
+	call SendDeadMessage
 	jmp skip1
 add_bomb1:
 	invoke BombFind, _coord		;該位置是否在啟動清單內
@@ -2259,6 +2282,10 @@ skip1:
 skip_pi2:
 	mov word ptr [esi], 5
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord		;消除該位置的物品
+	mov eax, _coord
+	cmp main_char_location, eax
+	jne skip2
+	call SendDeadMessage
 	jmp skip2
 add_bomb2:
 	invoke BombFind, _coord		;該位置是否在啟動清單內
@@ -2300,6 +2327,10 @@ skip2:
 skip_pi3:
 	mov word ptr [esi], 5
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord		;消除該位置的物品
+	mov eax, _coord
+	cmp main_char_location, eax
+	jne skip3
+	call SendDeadMessage
 	jmp skip3
 add_bomb3:
 	invoke BombFind, _coord		;該位置是否在啟動清單內
@@ -2342,6 +2373,10 @@ skip3:
 skip_pi4:
 	mov word ptr [esi], 5
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord		;消除該位置的物品
+	mov eax, _coord
+	cmp main_char_location, eax
+	jne skip4
+	call SendDeadMessage
 	jmp skip4
 add_bomb4:
 	invoke BombFind, _coord		;該位置是否在啟動清單內

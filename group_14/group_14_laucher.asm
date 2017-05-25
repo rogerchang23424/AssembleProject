@@ -4,9 +4,10 @@ INCLUDE group_14_SmallWinEx.inc
 
 MAJOR_VERSION = 0
 MINOR_VERSION = 4
-THIRD_VERSION = 13
+THIRD_VERSION = 14
 
 PUBLIC hout
+PUBLIC hin
 
 zeek_pane PROTO
 about_proc PROTO
@@ -19,6 +20,7 @@ main EQU start@0
 .data
 square BYTE "■", 0
 hout DWORD ?
+hin DWORD ?
 draw BYTE "Draw      ", 0
 jeek BYTE "Jeek      ", 0
 about BYTE "About     ", 0
@@ -55,6 +57,9 @@ main PROC
 
 	invoke GetStdHandle, STD_OUTPUT_HANDLE	   ;取得輸出HANDLE
 	mov hout, eax
+
+	invoke GetStdHandle, STD_INPUT_HANDLE		;取得輸入句炳
+	mov hin, eax
 
 	mov cci.dwSize, 1
 	mov cci.bVisible, FALSE

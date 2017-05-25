@@ -38,6 +38,10 @@ GetVersionExA PROTO, lpVersionInfo:PTR OSVERSIONINFO		;取得作業系統版本
 SetConsoleCursorInfo PROTO, _hout:HANDLE, _cci:PTR CONSOLE_CURSOR_INFO	;設定游標狀態
 SetConsoleCursorPosition PROTO, _hout:HANDLE, _coord:COORD		;設定游標位置
 SetConsoleTitleA PROTO, title_name:PTR BYTE
+WriteConsoleInputA PROTO, 
+	hConsoleInput:HANDLE, lpBuffer:PTR INPUT_RECORD, 
+	nLength:DWORD, lpNumberOfEventsWritten:PTR DWORD
+MapVirtualKeyA PROTO, uCode:DWORD, uMapType:DWORD
 
 ;Thread 初始化
 EXTERN CreateThread@24:PROC

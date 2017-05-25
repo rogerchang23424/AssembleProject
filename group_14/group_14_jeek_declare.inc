@@ -101,6 +101,8 @@ change_open PROTO, _coord:COORD
 EatApple PROTO, _coord:COORD
 ;黃藍花交替
 YellowAndBlueExchange PROTO
+;傳送死亡訊息
+SendDeadMessage PROTO
 ;添加檢查食人花狀態
 AddCheckPiranhaStatus PROTO, _coord:COORD
 ;檢查時人花狀態
@@ -139,6 +141,10 @@ WinGame PROTO
 LoseGame PROTO
 ;安全輸出
 SafePrintObject PROTO, idType:DWORD, _data:WORD, _coord:COORD
+;設定主角隱藏
+SetHidden PROTO
+;檢查主角隱藏狀態
+CheckHidden PROTO
 
 ;恐龍行程
 DinosaurProc PROTO
@@ -176,5 +182,3 @@ print_laser_eye PROTO
 print_dinosaur PROTO
 print_active_bomb PROTO
 ;結束印出的方法
-
-DinosaurMove PROTO

@@ -184,6 +184,9 @@ end_move:
 	pop edx
 	pop esi
 	mov COORD ptr [esi], eax
+	cmp eax, main_char_location
+	jne next
+	call SendDeadMessage
 	jmp next
 
 cannot_move:
