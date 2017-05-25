@@ -127,12 +127,16 @@ startTime DWORD 0
 ;現在時間
 curTime DWORD 0
 
+;隱藏時間結束戳記
+hidden_end DWORD 0
+
 is_eat BOOL FALSE	;主角有沒有被吃
 is_des BOOL FALSE	;是否抵達終點
 is_removing_hexagon BOOL FALSE ;是否正在移除物品
 force_destination BOOL FALSE	;強制抵達終點，用來偵錯
 is_exit_key BOOL FALSE			;是否按下離開建
 is_function_key BOOL FALSE		;是否按下f2
+is_hidden BOOL FALSE
 
 print_int BYTE "%d", 0
 print_short BYTE "%hd", 0
@@ -426,6 +430,8 @@ cleanMap PROC	;此函式顧名思義就是把所有的資料恢復原始，除�
 	mov active_bomb_count, 0
 	mov is_removing_hexagon, FALSE
 	mov sum_of_dinosaur, 0
+	mov is_hidden, FALSE
+	mov hidden_end, 0
 
 	pop ecx
 	pop edi
@@ -444,10 +450,21 @@ PrintMainChar PROC
 	add dl, al
 	call Gotoxy		;將地圖的位置轉換成主控台的位置
 
+	mov al, is_hidden
+	test al, al
+	jz print_show
+
+	mov eax, 8
+	call SetTextColor
+	invoke WriteWideString, hout, OFFSET act   ;把角色印出來
+	jmp end_print_main_proc
+
+print_show:
 	mov eax, 12
 	call SetTextColor
 	invoke WriteWideString, hout, OFFSET act   ;把角色印出來
 
+end_print_main_proc:
 	ret
 PrintMainChar ENDP
 
@@ -782,7 +799,9 @@ is_dead:
 
 skip:
 cannot_move:
-
+	push eax
+	call CheckHidden
+	pop eax
 	ret
 MoveCharactor ENDP
 
@@ -864,6 +883,8 @@ IsFlowerAndBoxEat PROC
 	je eat_box
 	cmp word ptr [esi], 21	;是否為藍黃交替店
 	je change_flower
+	cmp word ptr [esi], 22
+	je eat_pill
 	jmp end_procedure
 
 eat_flower:
@@ -880,7 +901,10 @@ change_flower:
 	mov word ptr [esi], 5	;將該點更正為空地
 	call YellowAndBlueExchange	;將藍花與黃花交替
 	jmp end_procedure
-
+eat_pill:
+	mov word ptr [esi], 5	;將該點更正為空地
+	call SetHidden	;將角色隱藏
+	jmp end_procedure
 end_procedure:
 	pop esi
 	pop edx
@@ -982,6 +1006,10 @@ IsPiranhaNear PROC, _coord:COORD
 	push ebx
 	push edx		;將暫存器放入堆疊
 
+	mov al, is_hidden
+	test al, al
+	jnz not_near
+
 	mov ax, _coord.X
 	mov temp.X, ax
 	mov ax, _coord.Y
@@ -1041,6 +1069,7 @@ next4:
 next5:
 	sub temp.X, 1		;回到原本的點
 
+not_near:
 	xor eax, eax		;回傳0
 	jmp end_proc
 
@@ -1703,6 +1732,10 @@ BombFind ENDP
 
 SetPiranhaOpen PROC, _coord:COORD
 	push eax
+
+	mov al, is_hidden
+	test al, al
+	jnz end_process
 
 	movzx eax, _coord.Y
 	mov ebx, 17*(TYPE map)
@@ -2618,6 +2651,25 @@ ExitZeekProcess PROC
 	mov num_of_thread, 0	;把所有的資料清空
 	ret
 ExitZeekProcess ENDP
+
+SetHidden PROC
+	mov is_hidden, TRUE
+	invoke SafePrintObject, PRINT_MAIN_CHAR, 0, main_char_location
+	call clock
+	add eax, 8000
+	mov hidden_end, eax
+	ret
+SetHidden ENDP
+
+CheckHidden PROC
+	call clock
+	cmp eax, hidden_end
+	jl end_proc
+	mov is_hidden, FALSE
+	invoke SafePrintObject, PRINT_MAIN_CHAR, 0, main_char_location
+end_proc:
+	ret
+CheckHidden ENDP
 
 print_wall PROC		;印出牆
 	mov eax, map_main_color

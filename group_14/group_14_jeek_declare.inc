@@ -33,7 +33,7 @@ BOMB_STATUS STRUCT
 BOMB_STATUS ENDS
 
 ;Set total level
-TOTAL_LEVEL = 27
+TOTAL_LEVEL = 28
 
 ;主控台的輸出相容性
 ConsoleCompatibility PROTO
