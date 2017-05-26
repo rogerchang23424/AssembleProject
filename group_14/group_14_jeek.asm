@@ -142,7 +142,7 @@ print_int BYTE "%d", 0
 print_short BYTE "%hd", 0
 time_format BYTE "%02d:%02d", 0
 num_of_thread DWORD 0	;有多少個分流
-threads HANDLE 8 DUP(?)	;為一個放置THREAD HANDLE的陣列
+threads HANDLE 10 DUP(?)	;為一個放置THREAD HANDLE的陣列
 t_value DWORD 0
 
 cs_print RTL_CRITICAL_SECTION <>
@@ -799,9 +799,6 @@ is_dead:
 
 skip:
 cannot_move:
-	push eax
-	call CheckHidden
-	pop eax
 	ret
 MoveCharactor ENDP
 
@@ -2653,21 +2650,39 @@ ExitZeekProcess PROC
 ExitZeekProcess ENDP
 
 SetHidden PROC
+	LOCAL pid:DWORD
+
 	mov is_hidden, TRUE
 	invoke SafePrintObject, PRINT_MAIN_CHAR, 0, main_char_location
 	call clock
 	add eax, 8000
 	mov hidden_end, eax
+
+	lea esi, pid
+	push esi
+	push 0
+	push 0
+	push CheckHidden
+	push 0
+	push 0
+	call CreateThread@24	;啟動檢查隱形狀態執行續
+
+	mov ebx, num_of_thread
+	mov HANDLE ptr [(OFFSET threads)+ebx*(TYPE HANDLE)], eax
+	add num_of_thread, 1
+
 	ret
 SetHidden ENDP
 
 CheckHidden PROC
+start:
 	call clock
 	cmp eax, hidden_end
-	jl end_proc
+	jl start
 	mov is_hidden, FALSE
 	invoke SafePrintObject, PRINT_MAIN_CHAR, 0, main_char_location
 end_proc:
+	sub num_of_thread, 1
 	ret
 CheckHidden ENDP
 
