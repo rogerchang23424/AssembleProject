@@ -49,6 +49,8 @@ PUBLIC piranha_sta
 PUBLIC piranha_in
 PUBLIC dinosaur
 PUBLIC cs_print
+PUBLIC act
+PUBLIC print_method
 
 .data
 map WORD 12 DUP(17 DUP(?))
@@ -106,7 +108,7 @@ print_method DWORD 0, print_wall, print_ice_dirt_wall, print_dirt_wall, print_fl
 safe_print_method DWORD 0, PrintMainChar, PrintScore, PrintLevel, PrintKeys, PrintActiveBombCount, PrintTime
 			      DWORD PrintDinosaur
 ;表示有哪些十人花在吃
-piranha_sta PIRANHA_STATUS 10 DUP(<>)
+piranha_sta PIRANHA_STATUS 20 DUP(<>)
 piranha_in BYTE 0
 
 ;分數
@@ -156,10 +158,7 @@ hexagon_near_tag BYTE 0		;tag的表示法   0, 0, 0, 0, 上, 下, 左, 右
 
 .code
 zeek_pane PROC
-	call ConsoleCompatibility		;將字元改成舊版主控台可以顯示的字元，僅限cp950
 	
-	invoke GetStdHandle, STD_OUTPUT_HANDLE
-	;mov hout, eax	;取得主控台STD_OUTPUT_HANDLE 的HANDLE 值
 	call Clrscr
 	call InitGameScene	;導入遊戲場景
 continue1:
@@ -1520,7 +1519,7 @@ L1:
 	test al, al
 	jnz end_proc
 	push ecx
-	invoke Sleep, 10
+	invoke Sleep, 10	;執行續休眠十秒
 	pop ecx
 	loop L1
 	pop eax
@@ -2194,7 +2193,7 @@ while1:
 	mov al, is_des
 	test al, al			;是否要結束該執行緒
 	jnz end_proc
-	invoke Sleep, 100	;執行緒休眠100毫秒
+	invoke Sleep, 1	;執行緒休眠1毫秒
 	mov ecx, active_bomb_count
 	test ecx, ecx
 	je while1
@@ -2676,11 +2675,19 @@ SetHidden ENDP
 
 CheckHidden PROC
 start:
+	mov al, is_des
+	test al, al
+	jnz end_proc
+	invoke Sleep, 1
 	call clock
-	cmp eax, hidden_end
+	cmp eax, hidden_end		;檢查現在時間標記是否比隱藏結束時間標記大
 	jl start
-	mov is_hidden, FALSE
+	mov is_hidden, FALSE		;將角色設定為非隱形狀態
 	invoke SafePrintObject, PRINT_MAIN_CHAR, 0, main_char_location
+	invoke IsPiranhaNear, main_char_location
+	test eax, eax
+	jz end_proc
+	call SendDeadMessage
 end_proc:
 	sub num_of_thread, 1
 	ret

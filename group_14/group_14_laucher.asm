@@ -4,16 +4,22 @@ INCLUDE group_14_SmallWinEx.inc
 
 MAJOR_VERSION = 0
 MINOR_VERSION = 5
-THIRD_VERSION = 2
+THIRD_VERSION = 3
 
 PUBLIC hout
 PUBLIC hin
 
 zeek_pane PROTO
 about_proc PROTO
+help_proc PROTO
 myprint PROTO, hout:HANDLE, ddd:PTR BYTE
 Select_Method PROTO
+WriteWideString PROTO, hout:HANDLE, _ddd:PTR WORD
+ConsoleCompatibility PROTO
 
+EXTERN act:WORD
+EXTERN print_method:DWORD
+EXTERN map_main_color:DWORD
 
 main EQU start@0
 
@@ -22,10 +28,11 @@ square BYTE "■", 0
 hout DWORD ?
 hin DWORD ?
 draw BYTE "Draw      ", 0
-jeek BYTE "Jeek      ", 0
+jeek BYTE "Start     ", 0
+help BYTE "Help      ", 0
 about BYTE "About     ", 0
 exit_name BYTE "Exit      ", 0
-menuitem DWORD OFFSET jeek, OFFSET about, OFFSET exit_name
+menuitem DWORD OFFSET jeek, OFFSET help, OFFSET about, OFFSET exit_name
 title_name BYTE "Jeek 1", 0
 select DWORD 1
 message1 BYTE "Group 14 Final Project", 0ah, 0
@@ -33,6 +40,40 @@ message2 BYTE "Version: %d.%d.%d", 0ah, 0
 message3 BYTE "組員：張聿程、郭竣喨", 0ah, 0
 message4 BYTE "Operating System Version: %d.%d.%d", 0ah, 0
 message5 BYTE "OS:%s %s", 0ah, 0
+
+help_main_charactor BYTE "遊戲主角", 0
+help_colon BYTE ':'
+help_control_title BYTE "操作物件說明", 0
+help_control_allow BYTE "鍵盤上、下、左、右:控制角色", 0
+help_f1 BYTE "F1:重新開始", 0
+help_f2 BYTE "F2:跳關", 0
+help_esc BYTE "Esc:離開", 0
+help_item_title BYTE "遊戲物件說明", 0
+help_item_1 BYTE "表示圍牆", 0
+help_item_2 BYTE "表示冰與泥土圍牆", 0
+help_item_3 BYTE "表示泥土牆", 0
+help_item_4 BYTE "表示黃花，50分", 0
+help_item_5 BYTE "表示空地", 0
+help_item_6 BYTE "表示蘋果", 0
+help_item_7 BYTE "表示紅菇(代表終點)", 0
+help_item_8 BYTE "表示食人花(花朵打開的樣子)，靠近會死亡", 0
+help_item_9 BYTE "表示食人花(花朵縮小的樣子)", 0
+help_item_10 BYTE "表示食人花(花朵中的樣子)", 0
+help_item_11 BYTE "表示食人花(花朵膨脹的樣子)", 0
+help_item_12 BYTE "表示核廢料", 0
+help_item_13 BYTE "表示門，需要鑰匙打開", 0
+help_item_14 BYTE "表示鑰匙、最多只能攜帶一把", 0
+help_item_15 BYTE "表示炸彈，啟動後會炸掉上、下、左、右", 0
+help_item_16 BYTE "表示六角柱，上下左右有時會聯合消除", 0
+help_item_17 BYTE "表示裡面有錢的寶箱，1000分", 0
+help_item_18 BYTE "表示黃色球體", 0
+help_item_19 BYTE "表示綠色毒菇", 0
+help_item_20 BYTE "表示藍花", 0
+help_item_21 BYTE "表示一個踏墊，用來把藍花和黃花互換", 0
+help_item_22 BYTE "表示隱形丸，可以隱身8秒", 0
+help_item_23 BYTE "表示雷射眼", 0
+help_item_24 BYTE "表示恐龍，遊戲一開始接先向右移動", 0
+help_item_25 byte "表示啟動中的狀態", 0
 
 win2000 BYTE "Windows 2000", 0
 winxp BYTE "Windows XP", 0
@@ -65,6 +106,8 @@ main PROC
 	mov cci.bVisible, FALSE
 	invoke SetConsoleCursorInfo, hout, ADDR cci		;隱藏游標
 	invoke SetConsoleTitleA, OFFSET title_name		;設定主控台名稱
+
+	call ConsoleCompatibility		;將字元改成舊版主控台可以顯示的字元，僅限cp950
 
 			;以下為顯示主選單內容
 while_loop1:
@@ -154,6 +197,276 @@ enter_key:
 end_switch:
 	jmp while_loop1
 main ENDP
+
+help_proc PROC
+	invoke myprint, hout, OFFSET help_main_charactor
+	mov al, help_colon
+	call WriteChar
+	call Crlf
+
+	mov eax, 12
+	call SetTextColor
+	invoke WriteWideString, hout, OFFSET act
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_main_charactor
+	call Crlf
+
+	call Crlf
+	invoke myprint, hout, OFFSET help_control_title
+	mov al, help_colon
+	call WriteChar
+	call Crlf
+
+	invoke myprint, hout, OFFSET help_control_allow
+	call Crlf
+
+	invoke myprint, hout, OFFSET help_f1
+	call Crlf
+
+	invoke myprint, hout, OFFSET help_f2
+	call Crlf
+
+	invoke myprint, hout, OFFSET help_esc
+	call Crlf
+
+	call Crlf
+	invoke myprint, hout, OFFSET help_item_title
+	mov al, help_colon
+	call WriteChar
+	call Crlf
+
+	mov esi, OFFSET print_method
+	add esi, 4
+	mov map_main_color, 7
+	call dword ptr [esi]
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_1
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_2
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_3
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_4
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_5
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_6
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_7
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_8
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_9
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_10
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_11
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_12
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_13
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_14
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_15
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_16
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_17
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_18
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_19
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_20
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_21
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_22
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_23
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_24
+	call Crlf
+
+	add esi, 4
+	call dword ptr [esi]
+	mov eax, 7
+	call SetTextColor
+	mov al, help_colon
+	call WriteChar
+	invoke myprint, hout, OFFSET help_item_25
+	call Crlf
+
+	call ReadChar
+	call Clrscr
+	ret
+help_proc ENDP
 
 GetOSName PROC, _osvi:PTR OSVERSIONINFOEX
 	mov esi, _osvi
@@ -300,15 +613,20 @@ Select_Method PROC
 	je select_is_2		;選擇about
 	cmp select, 3
 	je select_is_3		;選擇離開
+	cmp select, 4
+	je select_is_4
 	jmp end_switch
 select_is_1:
-	call Clrscr
 	call zeek_pane
 	jmp end_switch		;進入jeek
 select_is_2:
+	call Clrscr
+	call help_proc
+	jmp end_switch
+select_is_3:
 	call about_proc
 	jmp end_switch		;顯示相關信息
-select_is_3:
+select_is_4:
 	exit				;結束程式
 end_switch:
 	call Clrscr

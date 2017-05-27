@@ -110,6 +110,8 @@
       <SubSystem>Console</SubSystem>
       <EntryPointSymbol>start</EntryPointSymbol>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <FixedBaseAddress>true</FixedBaseAddress>
     </Link>
     <MASM>
       <IncludePaths>$(ProjectDir)include;%(IncludePaths)</IncludePaths>
