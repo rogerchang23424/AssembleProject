@@ -335,9 +335,8 @@ InitiateStatusBar PROC
 	call PrintTime
 
 	call StartPiranhaThread			;開始時人花狀態分流
-	call StartBombThread		;開始炸彈計時分流
+	call StartItemCheckerThread
 	call StartTimeThread	;開始計時器分流
-	call StartHexagonListenerThread
 	call StartDinosaurProcessThread
 
 	ret
@@ -493,7 +492,7 @@ StartPiranhaThread PROC
 	ret
 StartPiranhaThread ENDP
 
-StartHexagonListenerThread PROC
+StartItemCheckerThread PROC
 	LOCAL pid:DWORD
 	push esi
 
@@ -501,10 +500,10 @@ StartHexagonListenerThread PROC
 	push esi
 	push 0
 	push 0
-	push HexagonListener
+	push ItemChecker
 	push 0
 	push 0
-	call CreateThread@24	;啟動檢查食人花的執行緒
+	call CreateThread@24	;啟動檢查物件的執行緒
 
 	mov esi, OFFSET threads
 	mov edx, num_of_thread
@@ -515,31 +514,8 @@ StartHexagonListenerThread PROC
 
 	pop esi
 	ret
-StartHexagonListenerThread ENDP
-
-StartBombThread PROC
-	LOCAL pid:DWORD
-	push esi
-
-	lea esi, pid
-	push esi
-	push 0
-	push 0
-	push CheckBombStatus
-	push 0
-	push 0
-	call CreateThread@24		;啟動檢查炸彈的執行緒
-
-	mov esi, OFFSET threads
-	mov edx, num_of_thread
-	shl edx, 2
-	add esi, edx
-	mov HANDLE PTR [esi], eax
-	add num_of_thread, 1	;將該執行緒存到執行緒陣列裡
-
-	pop esi
 	ret
-StartBombThread ENDP
+StartItemCheckerThread ENDP
 
 StartTimeThread PROC
 	LOCAL pid:DWORD
@@ -1994,6 +1970,20 @@ check_y_forloop1:
 	ret
 YellowAndBlueExchange ENDP
 
+ItemChecker PROC
+while1:
+	mov al, is_des
+	test al, al
+	jnz end_proc
+	call HexagonChecker
+	call CheckBombStatus
+	invoke Sleep, 10
+	jmp while1
+end_proc:
+	xor eax, eax
+	ret
+ItemChecker ENDP
+
 SendDeadMessage PROC
 	LOCAL ir:INPUT_RECORD, dwtmp:DWORD
 	mov ir.EventType, KEY_EVENT
@@ -2169,34 +2159,24 @@ end_proc:
 	ret
 FindPiranhaStatus ENDP
 
-HexagonListener PROC
-while1:
-	mov al, is_des
-	test al, al
-	jnz end_proc
+HexagonChecker PROC
+
 	mov al, is_removing_hexagon
 	test al, al
 	jz skip
 	call SoftRemoveHexagon
 skip:
-	invoke Sleep, 100
-	jmp while1
 
 end_proc:
-	mov eax, 0
 	ret
-HexagonListener ENDP
+HexagonChecker ENDP
 
 CheckBombStatus PROC
 
-while1:
-	mov al, is_des
-	test al, al			;是否要結束該執行緒
-	jnz end_proc
 	invoke Sleep, 1	;執行緒休眠1毫秒
 	mov ecx, active_bomb_count
 	test ecx, ecx
-	je while1
+	je end_proc
 	mov esi, OFFSET active_bomb_location		;將esi指向啟動炸彈陣列的頭
 L1:
 	mov eax, curTime
@@ -2211,10 +2191,9 @@ L1:
 skip:
 	add esi, TYPE BOMB_STATUS		;指向下一個
 	loop L1
-	jmp while1
+
 
 end_proc:
-	mov eax, 0
 	ret
 CheckBombStatus ENDP
 
@@ -2410,7 +2389,7 @@ skip_pi4:
 add_bomb4:
 	invoke BombFind, _coord		;該位置是否在啟動清單內
 	cmp eax, -1
-	jne skip1
+	jne skip4
 	mov word ptr [esi], 25		;將該位置改成啟動狀態
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	invoke AddBomb, _coord		;添加該炸彈

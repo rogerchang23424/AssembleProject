@@ -27,6 +27,9 @@
     <MASM Include="group_14_laucher.asm">
       <Filter>資源檔</Filter>
     </MASM>
+    <MASM Include="group_14_laser_eye.asm">
+      <Filter>資源檔</Filter>
+    </MASM>
   </ItemGroup>
   <ItemGroup>
     <None Include="group_14_jeek_declare.inc">

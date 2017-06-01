@@ -418,6 +418,19 @@ map32 WORD 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 	  WORD 1,20,20, 5, 4, 5, 4, 5,20,20, 1, 5, 5,17, 5, 5, 1
 	  WORD 1,14,16, 5,16, 5, 5, 4,16,14, 1, 8, 5, 5, 5, 8, 1
 	  WORD 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+
+map33 WORD 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+	  WORD 1, 5, 4, 5, 4, 5, 4, 5, 5, 4, 5, 5, 4, 1, 1, 1, 1
+	  WORD 1, 5, 5, 4, 5, 4, 5, 9, 5, 5, 4, 5, 5, 1, 1, 1, 1
+	  WORD 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1
+	  WORD 1,23,18, 4, 5, 5, 6, 5,18,23, 1, 6, 5, 9, 6,24, 1
+	  WORD 1,18, 4, 5, 5, 4, 5, 4, 5,18, 1, 1, 4, 1, 1, 1, 1
+	  WORD 1, 5, 5, 4, 5,17, 5, 4, 5, 5, 1,17, 5,16, 5,16, 1
+	  WORD 1, 4, 5, 5, 6, 5, 4, 4, 5, 4, 1, 1, 1, 5, 1, 1, 1
+	  WORD 1, 5, 4, 4, 5, 4, 5,17, 4, 5, 1, 6, 9, 4, 9, 6, 1
+	  WORD 1, 5, 5, 5, 4, 5, 5, 4, 5, 4, 1, 1, 1, 5, 1, 1, 1
+	  WORD 1, 7, 4,17, 5, 5, 4, 5, 5, 5,18, 5, 5, 5, 4,17, 1
+	  WORD 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 ;地圖資料區，終點
 map_ptr DWORD OFFSET map1, OFFSET map2, OFFSET map3, OFFSET map4, OFFSET map5
 		DWORD OFFSET map6, OFFSET map7, OFFSET map8, OFFSET map9, OFFSET map10
@@ -425,19 +438,19 @@ map_ptr DWORD OFFSET map1, OFFSET map2, OFFSET map3, OFFSET map4, OFFSET map5
 		DWORD OFFSET map16, OFFSET map17, OFFSET map18, OFFSET map19, OFFSET map20
 		DWORD OFFSET map21, OFFSET map22, OFFSET map23, OFFSET map24, OFFSET map25
 		DWORD OFFSET map26, OFFSET map27, OFFSET map28, OFFSET map29, OFFSET map30
-		DWORD OFFSET map31, OFFSET map32
+		DWORD OFFSET map31, OFFSET map32, OFFSET map33
 map_main_loc COORD <2,2>, <1,1>, <1,1>, <4,4>, <5,2>, <12,8>, <2,1>, <5,1>, <4,1>, <8,6>
 			 COORD <8,5>, <2,1>, <4, 1>, <4,2>, <1, 10>, <2, 2>, <8, 5>, <1,1>, <1,1>, <6,3>
 			 COORD <4,0>, <9,8>, <4,7>, <1,1>, <3,1>, <15,6>, <6,5>, <14,5>, <9,3>, <4,2>
-			 COORD <11,4>, <11, 4>
+			 COORD <11,4>, <11, 4>,<1,2>
 map_size_2 COORD <17,9>, <17,9>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>
 		   COORD <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17, 12>, <17,12>, <17,12>, <17,12>
 		   COORD <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>, <17,12>
-		   COORD <17,12>, <17,12>
+		   COORD <17,12>, <17,12>, <17, 12>
 map_main_color_table DWORD lightBlue, yellow, lightBlue, lightBlue, gray, lightRed, lightMagenta, lightBlue, magenta, lightRed
 					 DWORD lightBlue, yellow, red, red, lightBlue, lightBlue, lightBlue, gray, lightBlue, 6
 					 DWORD lightBlue, gray, lightBlue, yellow, lightBlue, gray, yellow, gray, lightBlue, lightBlue
-					 DWORD 4, 4
+					 DWORD 4, 4, gray
 .code
 LoadMap PROC
 	call cleanMap	;把舊有的地圖清除

@@ -33,7 +33,7 @@ BOMB_STATUS STRUCT
 BOMB_STATUS ENDS
 
 ;Set total level
-TOTAL_LEVEL = 32
+TOTAL_LEVEL = 33
 
 ;主控台的輸出相容性
 ConsoleCompatibility PROTO
@@ -57,10 +57,8 @@ myprint PROTO, _hout:HANDLE, msg:PTR BYTE
 PrintMainChar PROTO
 ;開始時人花執行緒
 StartPiranhaThread PROTO
-;開始六角柱執行緒
-StartHexagonListenerThread PROTO
-;開始炸彈執行緒
-StartBombThread PROTO
+;開始物品檢查執行緒
+StartItemCheckerThread PROTO
 ;開始時間執行緒
 StartTimeThread PROTO
 ;開始恐龍執行緒
@@ -101,6 +99,8 @@ change_open PROTO, _coord:COORD
 EatApple PROTO, _coord:COORD
 ;黃藍花交替
 YellowAndBlueExchange PROTO
+;物件管理員
+ItemChecker PROTO
 ;傳送死亡訊息
 SendDeadMessage PROTO
 ;添加檢查食人花狀態
@@ -114,7 +114,7 @@ RemovePiranhaStatus PROTO
 ;找到時人花狀態
 FindPiranhaStatus PROTO, _coord:COORD
 ;六角柱傾聽者
-HexagonListener PROTO
+HexagonChecker PROTO
 ;檢查炸彈狀態
 CheckBombStatus PROTO
 ;炸彈爆炸

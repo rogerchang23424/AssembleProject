@@ -22,6 +22,7 @@
     <MASM Include="group_14_dinosaur.asm" />
     <MASM Include="group_14_jeek.asm" />
     <MASM Include="group_14_jeek_map_table.asm" />
+    <MASM Include="group_14_laser_eye.asm" />
     <MASM Include="group_14_laucher.asm" />
   </ItemGroup>
   <ItemGroup>
