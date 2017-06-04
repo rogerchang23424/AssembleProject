@@ -63,6 +63,8 @@ StartItemCheckerThread PROTO
 StartTimeThread PROTO
 ;開始恐龍執行緒
 StartDinosaurProcessThread PROTO
+;開始雷射眼執行緒
+StartLaserEyeThread PROTO
 ;控制鍵
 MoveCharactor PROTO
 ;判斷是否為終點, Return register:eax
@@ -154,6 +156,11 @@ AddDinosaur PROTO, _coord:COORD
 PrintDinosaur PROTO, _loc:COORD
 ;恐龍移動
 DinosaurMove PROTO
+
+;檢查主角樹否為雷射演範圍
+LaserEyeCheck PROTO
+;添加檢查雷射眼
+AddLaserEye PROTO
 
 ;以下為印出元素的方法
 print_wall PROTO

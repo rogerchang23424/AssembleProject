@@ -16,8 +16,8 @@ PUBLIC dinosaur_move_dir
 PUBLIC sum_of_dinosaur
 
 .data
-dinosaur_location COORD 10 DUP(<>)
-dinosaur_move_dir DIRECTION 10 DUP (?)
+dinosaur_location COORD 15 DUP(<>)
+dinosaur_move_dir DIRECTION 15 DUP (?)
 sum_of_dinosaur DWORD ?
 .code
 DinosaurProc PROC

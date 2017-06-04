@@ -38,6 +38,8 @@ EXTERN hin:DWORD
 EXTERN dinosaur_location:COORD
 EXTERN dinosaur_move_dir:DIRECTION
 EXTERN sum_of_dinosaur:DWORD
+EXTERN temp_laser_location:COORD
+EXTERN sum_of_laser_eye:DWORD
 
 PUBLIC map
 PUBLIC map_size
@@ -51,6 +53,7 @@ PUBLIC dinosaur
 PUBLIC cs_print
 PUBLIC act
 PUBLIC print_method
+PUBLIC is_hidden
 
 .data
 map WORD 12 DUP(17 DUP(?))
@@ -138,7 +141,7 @@ is_removing_hexagon BOOL FALSE ;是否正在移除物品
 force_destination BOOL FALSE	;強制抵達終點，用來偵錯
 is_exit_key BOOL FALSE			;是否按下離開建
 is_function_key BOOL FALSE		;是否按下f2
-is_hidden BOOL FALSE
+is_hidden BOOL FALSE		;角色是否隱藏
 
 print_int BYTE "%d", 0
 print_short BYTE "%hd", 0
@@ -338,6 +341,7 @@ InitiateStatusBar PROC
 	call StartItemCheckerThread
 	call StartTimeThread	;開始計時器分流
 	call StartDinosaurProcessThread
+	call StartLaserEyeThread
 
 	ret
 InitiateStatusBar ENDP
@@ -361,6 +365,12 @@ x_forloop1:
 	mov word ptr [esi], 5
 	jmp next
 skip:
+	cmp word ptr [esi], 23
+	jne skip_laser
+	mov eax, _coord
+	mov temp_laser_location, eax
+	call AddLaserEye
+skip_laser:
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord	;將該元素的位置印出來
 next:
 	add esi, 2
@@ -428,6 +438,7 @@ cleanMap PROC	;此函式顧名思義就是把所有的資料恢復原始，除�
 	mov active_bomb_count, 0
 	mov is_removing_hexagon, FALSE
 	mov sum_of_dinosaur, 0
+	mov sum_of_laser_eye, 0
 	mov is_hidden, FALSE
 	mov hidden_end, 0
 
@@ -564,6 +575,30 @@ StartDinosaurProcessThread PROC
 	pop esi
 	ret
 StartDinosaurProcessThread ENDP
+
+StartLaserEyeThread PROC
+	LOCAL pid:DWORD
+	push esi
+
+	lea esi, pid
+	push esi
+	push 0
+	push 0
+	push LaserEyeCheck
+	push 0
+	push 0
+	call CreateThread@24	;啟動雷射眼的執行緒
+
+	mov esi, OFFSET threads
+	mov edx, num_of_thread
+	shl edx, 2
+	add esi, edx
+	mov HANDLE PTR [esi], eax
+	add num_of_thread, 1		;將該執行緒存到執行緒陣列裡
+
+	pop esi
+	ret
+StartLaserEyeThread ENDP
 
 IsDestination PROC
 	mov al, force_destination		;檢查是否強制終點
@@ -818,8 +853,10 @@ not_force_wall:
 later_compare2:
 	cmp word ptr [esi], 8	;編號8~11代表時人花各種狀態編號
 	jl not_block
-	cmp word ptr [esi], 12	;編號12代表核廢料罐
-	jg not_block
+
+later_compare3:
+	cmp word ptr [esi], 23
+	jne not_block
 
 is_block:
 	mov eax, 1
