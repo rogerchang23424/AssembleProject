@@ -853,6 +853,8 @@ not_force_wall:
 later_compare2:
 	cmp word ptr [esi], 8	;編號8~11代表時人花各種狀態編號
 	jl not_block
+	cmp word ptr [esi], 12
+	jle is_block
 
 later_compare3:
 	cmp word ptr [esi], 23

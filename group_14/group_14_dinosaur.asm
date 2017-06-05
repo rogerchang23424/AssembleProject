@@ -10,6 +10,7 @@ EXTERN level:WORD
 EXTERN main_char_location:COORD
 EXTERN is_des:BOOL
 EXTERN cs_print:RTL_CRITICAL_SECTION
+EXTERN piranha_sta:PIRANHA_STATUS
 
 PUBLIC dinosaur_location
 PUBLIC dinosaur_move_dir
@@ -105,6 +106,67 @@ end_proc:
 	ret
 IsDinosaurBlock ENDP
 
+IsDinosaurBackClear PROC, _coord:COORD, _dir:DIRECTION
+	movzx eax, _coord.Y
+	mov ebx, 34
+	imul ebx
+	movzx edx, _coord.X
+	shl edx, 1
+	add eax, edx
+	mov esi, OFFSET map
+	add esi, eax		;將esi指向該地圖的點
+
+	cmp _dir, DIR_LEFT
+	je move_left
+	cmp _dir, DIR_RIGHT
+	je move_right
+	cmp _dir, DIR_UP
+	je move_up
+	cmp _dir, DIR_DOWN
+	je move_down
+	jmp cannot_move
+
+move_left:
+	sub _coord.X, 1
+	js cannot_move
+	sub esi, 2
+	jmp next
+
+move_right:
+	add _coord.X, 1
+	cmp _coord.X, 17
+	jge cannot_move
+	add esi, 2
+	jmp next
+
+move_up:
+	sub _coord.Y, 1
+	js cannot_move
+	sub esi, 34
+	jmp next
+
+move_down:
+	add _coord.Y, 1
+	cmp _coord.Y, 12
+	jge cannot_move
+	add esi, 34
+	jmp next
+
+next:
+	cmp word ptr [esi], 5		;是否為空地
+	jne cannot_move
+
+can_move:
+	mov eax, 1
+	jmp end_proc
+
+cannot_move:
+	xor eax, eax
+
+end_proc:
+	ret
+IsDinosaurBackClear ENDP
+
 DinosaurMove PROC
 	LOCAL _coord:COORD, _dir:DIRECTION
 	mov ecx, sum_of_dinosaur
@@ -152,6 +214,22 @@ move_left:
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	sub _coord.X, 1
 	sub esi, 2
+	cmp word ptr [esi], 10		;是否為中、大石人花
+	jl skip1
+	cmp word ptr [esi], 11
+	jg skip1
+	invoke FindPiranhaStatus, _coord		;檢查該時人花有沒有在十人花清單內
+	push esi
+	mov esi, OFFSET piranha_sta
+	mov ebx, eax
+	shl ebx, 2
+	mov ecx, eax
+	shl ecx, 1
+	add ebx, ecx
+	add esi, ebx
+	mov (PIRANHA_STATUS PTR [esi])._times, 0		;將該時人花狀態設為零
+	pop esi
+skip1:
 	mov word ptr [esi], 3
 	invoke PrintDinosaur, _coord
 	jmp end_move
@@ -161,6 +239,22 @@ move_right:
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	add _coord.X, 1
 	add esi, 2
+	cmp word ptr [esi], 10		;是否為中、大石人花
+	jl skip2
+	cmp word ptr [esi], 11
+	jg skip2
+	invoke FindPiranhaStatus, _coord		;檢查該時人花有沒有在十人花清單內
+	push esi
+	mov esi, OFFSET piranha_sta
+	mov ebx, eax
+	shl ebx, 2
+	mov ecx, eax
+	shl ecx, 1
+	add ebx, ecx
+	add esi, ebx
+	mov (PIRANHA_STATUS PTR [esi])._times, 0		;將該時人花狀態設為零
+	pop esi
+skip2:
 	mov word ptr [esi], 3
 	invoke PrintDinosaur, _coord
 	jmp end_move
@@ -170,15 +264,48 @@ move_up:
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	sub _coord.Y, 1
 	sub esi, 34
+	cmp word ptr [esi], 10		;是否為中、大石人花
+	jl skip3
+	cmp word ptr [esi], 11
+	jg skip3
+	invoke FindPiranhaStatus, _coord		;檢查該時人花有沒有在十人花清單內
+	push esi
+	mov esi, OFFSET piranha_sta
+	mov ebx, eax
+	shl ebx, 2
+	mov ecx, eax
+	shl ecx, 1
+	add ebx, ecx
+	add esi, ebx
+	mov (PIRANHA_STATUS PTR [esi])._times, 0		;將該時人花狀態設為零
+	pop esi
+skip3:
 	mov word ptr [esi], 3
 	invoke PrintDinosaur, _coord
 	jmp end_move
 
 move_down:
+	
 	mov word ptr [esi], 5
 	invoke SafePrintObject, MAP_ELEMENT, word ptr [esi], _coord
 	add _coord.Y, 1
 	add esi, 34
+	cmp word ptr [esi], 10		;是否為中、大石人花
+	jl skip4
+	cmp word ptr [esi], 11
+	jg skip4
+	invoke FindPiranhaStatus, _coord		;檢查該時人花有沒有在十人花清單內
+	push esi
+	mov esi, OFFSET piranha_sta
+	mov ebx, eax
+	shl ebx, 2
+	mov ecx, eax
+	shl ecx, 1
+	add ebx, ecx
+	add esi, ebx
+	mov (PIRANHA_STATUS PTR [esi])._times, 0		;將該時人花狀態設為零
+	pop esi
+skip4:
 	mov word ptr [esi], 3
 	invoke PrintDinosaur, _coord
 	jmp end_move
@@ -190,7 +317,9 @@ end_move:
 	mov COORD ptr [esi], eax
 	cmp eax, main_char_location
 	jne next
+	push edx
 	call SendDeadMessage
+	pop edx
 	jmp next
 
 cannot_move:
@@ -223,7 +352,7 @@ left_change:
 	mov _dir, DIR_RIGHT
 	push esi
 	push edx
-	invoke IsDinosaurBlock, _coord, _dir
+	invoke IsDinosaurBackClear, _coord, _dir
 	pop edx
 	pop esi
 	test eax, eax
@@ -250,7 +379,7 @@ right_change:
 	mov _dir, DIR_LEFT
 	push esi
 	push edx
-	invoke IsDinosaurBlock, _coord, _dir
+	invoke IsDinosaurBackClear, _coord, _dir
 	pop edx
 	pop esi
 	test eax, eax
@@ -277,7 +406,7 @@ up_change:
 	mov _dir, DIR_DOWN
 	push esi
 	push edx
-	invoke IsDinosaurBlock, _coord, _dir
+	invoke IsDinosaurBackClear, _coord, _dir
 	pop edx
 	pop esi
 	test eax, eax
@@ -304,7 +433,7 @@ down_change:
 	mov _dir, DIR_UP
 	push esi
 	push edx
-	invoke IsDinosaurBlock, _coord, _dir
+	invoke IsDinosaurBackClear, _coord, _dir
 	pop edx
 	pop esi
 	test eax, eax

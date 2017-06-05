@@ -102,8 +102,8 @@ skip2:
 	jmp at_down_continue
 
 x_insight:
-	mov ax, main_char_location.Y
-	cmp (COORD ptr [esi]).Y, ax		;雷射眼.X > 主角.X，代表在左邊
+	mov ax, main_char_location.X
+	cmp (COORD ptr [esi]).X, ax		;雷射眼.X > 主角.X，代表在左邊
 	jg at_left
 at_right:
 	movzx eax, _coord.Y
@@ -155,9 +155,9 @@ skip4:
 	jmp at_left_continue
 
 next_step:
-	add esi, TYPE COORD
 	pop ecx
 	pop esi
+	add esi, TYPE COORD
 	dec ecx
 	jnz L1
 	jmp while1
